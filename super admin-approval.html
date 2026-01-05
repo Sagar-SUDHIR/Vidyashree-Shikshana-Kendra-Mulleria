@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Super Admin - Teacher Management - Vidyasshree Shikshana Kendra</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(-45deg, #ff8c42, #ff6b1a, #ff9f68, #ff7530);
+      background-size: 400% 400%;
+      animation: gradientBG 12s ease infinite;
+      min-height: 100vh;
+      padding: 2rem 0;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+      color: white;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      animation: fadeIn 1s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .dashboard-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    .logout-btn {
+      position: absolute;
+      top: 2rem;
+      right: 2rem;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: 2px solid rgba(255,255,255,0.3);
+      padding: 0.75rem 1.5rem;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .main-section {
+      background: rgba(255,255,255,0.95);
+      border-radius: 20px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+      backdrop-filter: blur(10px);
+      opacity: 0;
+      transform: translateY(30px);
+      animation: slideUp 0.8s ease forwards;
+    }
+
+    @keyframes slideUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-title {
+      color: #ff6b1a;
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .search-container {
+      background: #f8f9fa;
+      border-radius: 15px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 250px;
+      padding: 0.75rem 1rem;
+      border: 2px solid #e1e8ed;
+      border-radius: 10px;
+      font-size: 1rem;
+    }
+
+    .search-input:focus {
+      border-color: #ff8c42;
+      outline: none;
+      box-shadow: 0 0 8px rgba(255,140,66,0.4);
+    }
+
+    .filter-select {
+      padding: 0.75rem;
+      border: 2px solid #e1e8ed;
+      border-radius: 10px;
+      background: white;
+      min-width: 150px;
+    }
+
+    .clear-search-btn {
+      background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .teacher-card {
+      background: #fff;
+      border: 2px solid #e1e8ed;
+      border-radius: 15px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .teacher-card:hover {
+      border-color: #ff8c42;
+      box-shadow: 0 10px 30px rgba(255,140,66,0.2);
+      transform: translateY(-2px);
+    }
+
+    .card-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .info-label {
+      font-size: 0.8rem;
+      color: #666;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .info-value {
+      font-size: 1rem;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .assignment-section {
+      border-top: 2px solid #f0f0f0;
+      padding-top: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .assignment-title {
+      color: #ff6b1a;
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    .teacher-type-selection {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .type-radio {
+      display: none;
+    }
+
+    .type-label {
+      background: #f8f9fa;
+      border: 2px solid #e1e8ed;
+      border-radius: 10px;
+      padding: 0.75rem 1.5rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .type-radio:checked + .type-label {
+      background: linear-gradient(135deg, #ff8c42, #ff6b1a);
+      color: white;
+      border-color: #ff8c42;
+    }
+
+    .class-selection {
+      display: none;
+      margin-top: 1rem;
+    }
+
+    .class-selection.active {
+      display: block;
+    }
+
+    .single-class-select {
+      margin-bottom: 1rem;
+    }
+
+    .class-dropdown {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid #e1e8ed;
+      border-radius: 10px;
+      background: white;
+      font-size: 1rem;
+    }
+
+    .action-btn {
+      padding: 0.75rem 2rem;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      margin-right: 1rem;
+    }
+
+    .assign-btn {
+      background: linear-gradient(135deg, #2ecc71, #27ae60);
+      color: white;
+    }
+
+    .assign-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(46,204,113,0.4);
+    }
+
+    .assign-btn:disabled {
+      background: #bdc3c7;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .status-badge {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .status-assigned {
+      background: rgba(46,204,113,0.1);
+      color: #27ae60;
+      border: 2px solid rgba(46,204,113,0.3);
+    }
+
+    .status-unassigned {
+      background: rgba(243,156,18,0.1);
+      color: #f39c12;
+      border: 2px solid rgba(243,156,18,0.3);
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-content {
+      background: white;
+      margin: 15% auto;
+      padding: 2rem;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 500px;
+      text-align: center;
+      animation: slideUp 0.3s ease;
+    }
+
+    .modal h3 {
+      color: #ff6b1a;
+      margin-bottom: 1rem;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 2rem;
+    }
+
+    .confirm-btn {
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      color: white;
+    }
+
+    .cancel-btn {
+      background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+      color: white;
+    }
+
+    .message {
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      font-weight: 500;
+    }
+
+    .message.success {
+      background: rgba(46,204,113,0.1);
+      color: #27ae60;
+      border: 2px solid rgba(46,204,113,0.3);
+    }
+
+    .message.error {
+      background: rgba(231,76,60,0.1);
+      color: #c0392b;
+      border: 2px solid rgba(231,76,60,0.3);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: #666;
+    }
+
+    @media (max-width: 768px) {
+      .teacher-type-selection {
+        flex-direction: column;
+      }
+      
+      .logout-btn {
+        position: relative;
+        top: auto;
+        right: auto;
+        margin: 0 auto 2rem auto;
+        display: block;
+      }
+
+      .search-container {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .search-input {
+        min-width: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="logout-btn" onclick="logout()">Logout</button>
+
+  <div class="header">
+    <h1>Super Admin - Teacher Management</h1>
+    <p>Assign Teacher Roles & Class Responsibilities</p>
+  </div>
+
+  <div class="dashboard-container">
+    <div class="main-section">
+      <h2 class="section-title">👨‍🏫 Teacher Role Assignment</h2>
+      <div id="message-container"></div>
+      
+      <!-- Search and Filter for Teachers -->
+      <div class="search-container">
+        <input type="text" id="teacher-search" class="search-input" placeholder="Search teachers by name, email, or subject...">
+        <select id="teacher-assignment-filter" class="filter-select">
+          <option value="">All Teachers</option>
+          <option value="assigned">Assigned Teachers</option>
+          <option value="unassigned">Unassigned Teachers</option>
+          <option value="class-teacher">Class Teachers</option>
+          <option value="regular-teacher">Regular Teachers</option>
+        </select>
+        <button class="clear-search-btn" onclick="clearSearch()">Clear</button>
+      </div>
+      
+      <div id="teachers-container">
+        <div class="loading">Loading approved teachers...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div id="confirmModal" class="modal">
+    <div class="modal-content">
+      <h3>Confirm Assignment</h3>
+      <p id="confirmMessage"></p>
+      <div class="modal-buttons">
+        <button class="action-btn confirm-btn" onclick="confirmAssignment()">Yes, Assign</button>
+        <button class="action-btn cancel-btn" onclick="closeModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getAuth, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+    import { getFirestore, collection, getDocs, doc, updateDoc, query, where } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAp5yz00tXRKLhBIQoYq4sKIiFrjHzUsmY",
+      authDomain: "vidhyashree-mlr.firebaseapp.com",
+      projectId: "vidhyashree-mlr",
+      storageBucket: "vidhyashree-mlr.firebasestorage.app",
+      messagingSenderId: "469584837803",
+      appId: "1:469584837803:web:b1a9355fb0661c32ba8bee",
+      measurementId: "G-LYEYRP433X"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let approvedTeachers = [];
+    let filteredTeachers = [];
+    let currentAssignment = null;
+
+    // Load data on page load
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadApprovedTeachers();
+      setupSearchListeners();
+    });
+
+    function setupSearchListeners() {
+      document.getElementById('teacher-search').addEventListener('input', filterTeachers);
+      document.getElementById('teacher-assignment-filter').addEventListener('change', filterTeachers);
+    }
+
+    function filterTeachers() {
+      const searchTerm = document.getElementById('teacher-search').value.toLowerCase();
+      const assignmentFilter = document.getElementById('teacher-assignment-filter').value;
+      
+      filteredTeachers = approvedTeachers.filter(teacher => {
+        const matchesSearch = !searchTerm || 
+          teacher.name.toLowerCase().includes(searchTerm) ||
+          teacher.email.toLowerCase().includes(searchTerm) ||
+          teacher.subject.toLowerCase().includes(searchTerm);
+        
+        const matchesFilter = !assignmentFilter ||
+          (assignmentFilter === 'assigned' && teacher.assignmentType) ||
+          (assignmentFilter === 'unassigned' && !teacher.assignmentType) ||
+          (assignmentFilter === 'class-teacher' && teacher.assignmentType === 'class-teacher') ||
+          (assignmentFilter === 'regular-teacher' && teacher.assignmentType === 'regular-teacher');
+        
+        return matchesSearch && matchesFilter;
+      });
+      
+      renderTeachers();
+    }
+
+    window.clearSearch = function() {
+      document.getElementById('teacher-search').value = '';
+      document.getElementById('teacher-assignment-filter').value = '';
+      filteredTeachers = [...approvedTeachers];
+      renderTeachers();
+    }
+
+    async function loadApprovedTeachers() {
+      try {
+        const q = query(collection(db, 'admin-requests'), where('status', '==', 'approved'));
+        const snapshot = await getDocs(q);
+        approvedTeachers = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        filteredTeachers = [...approvedTeachers];
+        renderTeachers();
+      } catch (error) {
+        console.error('Error loading teachers:', error);
+        document.getElementById('teachers-container').innerHTML = 
+          '<div class="empty-state"><h3>Error loading teachers</h3></div>';
+      }
+    }
+
+    function renderTeachers() {
+      const container = document.getElementById('teachers-container');
+      
+      if (filteredTeachers.length === 0) {
+        container.innerHTML = '<div class="empty-state"><h3>No teachers found</h3></div>';
+        return;
+      }
+
+      container.innerHTML = filteredTeachers.map(teacher => `
+        <div class="teacher-card">
+          <div class="status-badge ${teacher.assignmentType ? 'status-assigned' : 'status-unassigned'}">
+            ${teacher.assignmentType ? 'Assigned' : 'Unassigned'}
+          </div>
+          <div class="card-info">
+            <div class="info-item">
+              <div class="info-label">Name</div>
+              <div class="info-value">${teacher.name}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Email</div>
+              <div class="info-value">${teacher.email}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Subject</div>
+              <div class="info-value">${teacher.subject}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Phone</div>
+              <div class="info-value">${teacher.phone || 'N/A'}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Current Assignment</div>
+              <div class="info-value">${teacher.assignmentType === 'class-teacher' ? 'Class Teacher' : teacher.assignmentType === 'regular-teacher' ? 'Regular Teacher' : 'Not Assigned'}</div>
+            </div>
+            ${teacher.classTeacherOf ? `
+            <div class="info-item">
+              <div class="info-label">Class Teacher Of</div>
+              <div class="info-value">${teacher.classTeacherOf}</div>
+            </div>
+            ` : ''}
+          </div>
+          <div class="assignment-section">
+            <div class="assignment-title">Assign Teacher Role</div>
+            <div class="teacher-type-selection">
+              <input type="radio" id="class-teacher-${teacher.id}" name="teacherType-${teacher.id}" value="class-teacher" class="type-radio" ${teacher.assignmentType === 'class-teacher' ? 'checked' : ''}>
+              <label for="class-teacher-${teacher.id}" class="type-label">Class Teacher</label>
+              
+              <input type="radio" id="regular-teacher-${teacher.id}" name="teacherType-${teacher.id}" value="regular-teacher" class="type-radio" ${teacher.assignmentType === 'regular-teacher' ? 'checked' : ''}>
+              <label for="regular-teacher-${teacher.id}" class="type-label">Regular Teacher</label>
+            </div>
+            
+            <div class="class-selection ${teacher.assignmentType === 'class-teacher' ? 'active' : ''}" id="class-teacher-selection-${teacher.id}">
+              <div class="single-class-select">
+                <select class="class-dropdown" id="single-class-${teacher.id}">
+                  <option value="">Select Class</option>
+                  <option value="LKG" ${teacher.classTeacherOf === 'LKG' ? 'selected' : ''}>LKG</option>
+                  <option value="UKG" ${teacher.classTeacherOf === 'UKG' ? 'selected' : ''}>UKG</option>
+                  <option value="1st" ${teacher.classTeacherOf === '1st' ? 'selected' : ''}>1st</option>
+                  <option value="2nd" ${teacher.classTeacherOf === '2nd' ? 'selected' : ''}>2nd</option>
+                  <option value="3rd" ${teacher.classTeacherOf === '3rd' ? 'selected' : ''}>3rd</option>
+                  <option value="4th" ${teacher.classTeacherOf === '4th' ? 'selected' : ''}>4th</option>
+                  <option value="5th" ${teacher.classTeacherOf === '5th' ? 'selected' : ''}>5th</option>
+                  <option value="6th" ${teacher.classTeacherOf === '6th' ? 'selected' : ''}>6th</option>
+                  <option value="7th" ${teacher.classTeacherOf === '7th' ? 'selected' : ''}>7th</option>
+                  <option value="8th" ${teacher.classTeacherOf === '8th' ? 'selected' : ''}>8th</option>
+                  <option value="9th" ${teacher.classTeacherOf === '9th' ? 'selected' : ''}>9th</option>
+                  <option value="10th" ${teacher.classTeacherOf === '10th' ? 'selected' : ''}>10th</option>
+                </select>
+              </div>
+            </div>
+            
+            <button class="action-btn assign-btn" onclick="assignTeacher('${teacher.id}')">
+              ${teacher.assignmentType ? 'Update Assignment' : 'Assign Role'}
+            </button>
+          </div>
+        </div>
+      `).join('');
+
+      // Add event listeners for radio buttons
+      filteredTeachers.forEach(teacher => {
+        const classTeacherRadio = document.getElementById(`class-teacher-${teacher.id}`);
+        const regularTeacherRadio = document.getElementById(`regular-teacher-${teacher.id}`);
+        const classTeacherSelection = document.getElementById(`class-teacher-selection-${teacher.id}`);
+
+        classTeacherRadio.addEventListener('change', () => {
+          if (classTeacherRadio.checked) {
+            classTeacherSelection.classList.add('active');
+          }
+        });
+
+        regularTeacherRadio.addEventListener('change', () => {
+          if (regularTeacherRadio.checked) {
+            classTeacherSelection.classList.remove('active');
+          }
+        });
+      });
+    }
+
+    window.logout = async function() {
+      try {
+        await signOut(auth);
+        window.location.href = 'login.html';
+      } catch (error) {
+        console.error('Error logging out:', error);
+      }
+    };
+
+    window.assignTeacher = function(teacherId) {
+      const teacher = approvedTeachers.find(t => t.id === teacherId);
+      const teacherType = document.querySelector(`input[name="teacherType-${teacherId}"]:checked`);
+      
+      if (!teacherType) {
+        showMessage('Please select teacher type (Class Teacher or Regular Teacher)', 'error');
+        return;
+      }
+
+      let assignmentData = {
+        teacherId,
+        teacherName: teacher.name,
+        assignmentType: teacherType.value
+      };
+
+      if (teacherType.value === 'class-teacher') {
+        const selectedClass = document.getElementById(`single-class-${teacherId}`).value;
+        if (!selectedClass) {
+          showMessage('Please select a class for the class teacher', 'error');
+          return;
+        }
+        assignmentData.classTeacherOf = selectedClass;
+      }
+
+      currentAssignment = assignmentData;
+      
+      const confirmMessage = teacherType.value === 'class-teacher' 
+        ? `Are you sure you want to assign ${teacher.name} as Class Teacher for ${assignmentData.classTeacherOf}?`
+        : `Are you sure you want to assign ${teacher.name} as Regular Teacher?`;
+      
+      document.getElementById('confirmMessage').textContent = confirmMessage;
+      document.getElementById('confirmModal').style.display = 'block';
+    };
+
+    window.confirmAssignment = async function() {
+      try {
+        const { teacherId } = currentAssignment;
+        
+        // Prepare update data
+        const updateData = {
+          assignmentType: currentAssignment.assignmentType,
+          assignedAt: new Date().toISOString()
+        };
+
+        // Add class teacher specific data
+        if (currentAssignment.assignmentType === 'class-teacher') {
+          updateData.classTeacherOf = currentAssignment.classTeacherOf;
+        } else {
+          // Remove classTeacherOf field for regular teachers
+          updateData.classTeacherOf = null;
+        }
+
+        // Update admin-requests collection
+        await updateDoc(doc(db, 'admin-requests', teacherId), updateData);
+
+        // Also update the users collection if userId exists
+        const teacherDoc = approvedTeachers.find(t => t.id === teacherId);
+        if (teacherDoc.userId) {
+          await updateDoc(doc(db, 'users', teacherDoc.userId), updateData);
+        }
+
+        showMessage('Teacher assignment updated successfully!', 'success');
+        await loadApprovedTeachers();
+        closeModal();
+      } catch (error) {
+        console.error('Error updating assignment:', error);
+        showMessage('Error updating teacher assignment. Please try again.', 'error');
+        closeModal();
+      }
+    };
+
+    window.closeModal = function() {
+      document.getElementById('confirmModal').style.display = 'none';
+      currentAssignment = null;
+    };
+
+    function showMessage(message, type) {
+      const container = document.getElementById('message-container');
+      container.innerHTML = `<div class="message ${type}">${message}</div>`;
+      
+      setTimeout(() => {
+        container.innerHTML = '';
+      }, 5000);
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const confirmModal = document.getElementById('confirmModal');
+      if (event.target === confirmModal) {
+        closeModal();
+      }
+    }
+  </script>
+</body>
+</html>
